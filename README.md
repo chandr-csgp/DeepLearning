@@ -1,42 +1,93 @@
-# 🧠 Deep Learning — Image Classification with CNN
+# 🧬 Diabetes Prediction — Single-Layer Perceptron
 
-**Multi-class image classification using Convolutional Neural Networks (93.25% accuracy)**
+**Binary classification using a Perceptron neural network on the Pima Indians Diabetes Dataset**
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange.svg)](https://www.tensorflow.org/)
-[![Keras](https://img.shields.io/badge/Keras-Deep%20Learning-red.svg)](https://keras.io/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-Keras-orange.svg)](https://www.tensorflow.org/)
+[![Dataset](https://img.shields.io/badge/Dataset-Pima%20Indians%20Diabetes-green.svg)](https://www.kaggle.com/uciml/pima-indians-diabetes-database)
 
 ---
 
 ## 📌 Overview
 
-This project implements a **Convolutional Neural Network (CNN)** for multi-class image classification using TensorFlow and Keras. The model achieves **93.25% test accuracy** through systematic architecture design and hyperparameter tuning.
+This project implements a **Perceptron** — the simplest neural network architecture — to predict whether a patient has diabetes based on 8 clinical features. The model is built in Keras and trained with a binary cross-entropy loss and SGD optimizer.
+
+University of Adelaide · Deep Learning Assessment 1 · **Grade: 74.5 / 100**
+
+---
+
+## 📊 Dataset — Pima Indians Diabetes
+
+- **Source:** `diabetes.csv` (Pima Indians Diabetes Database)
+- **Samples:** 768 patients
+- **Features:** 8 clinical measurements (Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age)
+- **Target:** `Outcome` — 1 (diabetic) / 0 (non-diabetic)
+- **Split:** 80% train / 20% test (`random_state=42`)
 
 ---
 
 ## 🏗️ Model Architecture
 
-- **Conv layers:** Multiple convolutional blocks with ReLU activation
-- **Pooling:** MaxPooling after each block
-- **Regularisation:** Dropout to prevent overfitting
-- **Output:** Softmax for multi-class probability distribution
-- **Optimiser:** Adam with tuned learning rate
+```python
+model = Sequential()
+model.add(Dense(1, input_dim=8, activation='sigmoid'))  # Single Perceptron
+model.compile(
+    optimizer=SGD(learning_rate=0.2),
+    loss=BinaryCrossentropy(),
+    metrics=['accuracy']
+)
+```
 
----
-
-## 📊 Results
-
-| Metric | Value |
+| Parameter | Value |
 |---|---|
-| Test Accuracy | **93.25%** |
-| Validation Method | Cross-validation |
-| Key Technique | Dropout regularisation + learning rate tuning |
+| Architecture | Single Dense layer (Perceptron) |
+| Activation | Sigmoid |
+| Optimizer | SGD (lr = 0.2) |
+| Loss | Binary Cross-Entropy |
+| Epochs | 30 |
+| Batch size | 10 |
 
 ---
 
-## 🔧 Tech Stack
+## ⚙️ Preprocessing
 
-`Python` · `TensorFlow` · `Keras` · `NumPy` · `Matplotlib`
+- **Standardisation:** `StandardScaler` applied to all 8 input features
+- **Label:** `Outcome` column — binary (0 / 1)
+
+---
+
+## 📈 Evaluation Metrics
+
+- **Accuracy** — percentage of correct predictions
+- **F1-Score** — harmonic mean of precision and recall
+- **Confusion Matrix** — visualised with Seaborn heatmap
+
+---
+
+## 🗂️ Key Code
+
+```python
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.losses import BinaryCrossentropy
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+
+# Preprocess
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train
+model.fit(X_train, y_train, epochs=30, batch_size=10, validation_data=(X_test, y_test))
+
+# Evaluate
+y_pred = (model.predict(X_test) > 0.5).astype("int32")
+accuracy = accuracy_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+```
 
 ---
 
@@ -45,9 +96,17 @@ This project implements a **Convolutional Neural Network (CNN)** for multi-class
 ```bash
 git clone https://github.com/chandr-csgp/DeepLearning.git
 cd DeepLearning
-pip install tensorflow numpy matplotlib
+
+pip install tensorflow scikit-learn pandas seaborn matplotlib
+
 python Keras.py
 ```
+
+---
+
+## 🔧 Tech Stack
+
+`Python` · `TensorFlow` · `Keras` · `scikit-learn` · `Pandas` · `NumPy` · `Seaborn`
 
 ---
 
